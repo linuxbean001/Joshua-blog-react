@@ -385,3 +385,21 @@ body{
 	  padding: 20px 20px 48px 30px;
 }
 }
+
+@media only screen and (max-width: 768px){
+    .blog-content-1 span{
+        display: block;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+	.btn-5{
+	   margin-bottom: 10px;
+	   display: inline-flex;
+	   flex-direction: column;
+	}
+	.btn-4 {
+	   display: inline-flex;
+	   flex-direction: column;
+	}
+   }
