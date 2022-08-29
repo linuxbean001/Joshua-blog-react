@@ -12,8 +12,19 @@ export const postApi = createApi({
             url: 'data',
             method: 'GET'  
           })  
-        })
-    })
+        }),
+      
+        getPostByLimit: builder.query({
+          query: (num) =>{
+            console.log("Limit Num",num)
+            return{
+            // url:`posts?_limit=${num}`,
+              url:`data?page=${num}`,
+              method: 'GET'
+            }
+          }
+        }),
+    }),
 })
 
-export const {useGetAllPostQuery} = postApi
+export const {useGetAllPostQuery,useGetPostByLimitQuery} = postApi
