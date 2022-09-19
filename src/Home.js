@@ -1,21 +1,53 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import background from './images/bg-hit.png';
-import { useGetPostByLimitQuery } from './services/post';
+import moment from 'moment'
+import axios from "axios";
+import { useDispatch, useSelector } from 'react-redux';
+import { setBlog } from './redux/actions/action'
+import ReactPaginate from "react-paginate"
+
 const Home = () => {
+  const blog = useSelector((state) => state.allBlog.blog);
+  const [pageNumber, setPageNumber] = useState(0)
+  const blogPerPage = 3
+  const pagesVisited = pageNumber * blogPerPage
+  const displayBlog = blog.slice(pagesVisited, pagesVisited + blogPerPage).map((user) => {
+    return (
+      <div className="col-md-4 pd-3" >
+        <div className="blog-content-1"   >
+          <img height={400} width={300} src={user.img_url} />
+          <span>{user.by_Category}</span>
+          <h2>{user.title}</h2>
+          <div className="icon-1">
+            <p><i className="fa fa-calendar" aria-hidden="true"></i>{ (user.created_at) ? moment(user.created_at).format("DD MMMM") : ""}</p>
+            <p><i className="fa fa-eye" aria-hidden="true"></i>8 Min Read</p>
+          </div>
+          < p >{user.desc.substring(0, 200)} <Link to={"/blogdetail/" + user.id + '/' + user.by_Category}>Veiw More</Link></p>
+        </div>
+      </div>
+    )
+  })
+  const pageCount = Math.ceil(blog.length / blogPerPage);
+  const changePage = ({ selected }) => {
+    setPageNumber(selected)
+  }
+  const dispatch = useDispatch();
+  const fetchBlog = async () => {
+    const respone = await axios.get("http://127.0.0.1:8000/api/data").catch((err) => {
+      console.log("err", err)
+    });
+    dispatch(setBlog(respone.data))
+  };
+  useEffect(() => {
+    fetchBlog();
+  }, []);
 
-  const [page, setPage] = useState(1);
-  const respon = useGetPostByLimitQuery(page);
- 
-  if (respon.isLoading) return <><h4>Loading...</h4></>
-  if (respon.isError) return <><h2>An error occured {respon.error.error}</h2></>
-
+  if (blog.isLoading) return <><h4>Loading...</h4></>
+  if (blog.isError) return <><h2>An error occured {blog.error.error}</h2></>
   const myStyle = {
     backgroundImage: `linear-gradient( to bottom, #0b1216c9, #0b1216fc ), url("${background}")`
   };
-  const login = () => {
-    window.location.href = "/blogdetail";
-  }
   return (
     <>
       <section className="bg-1" style={myStyle} >
@@ -32,43 +64,21 @@ const Home = () => {
       <section className="pd-1 pd-2 bg-2">
         <div className="container">
           <div className="row">
-
-            {respon.data.data!= null ? respon.data.data.map((user, i) => (
-
-              <div className="col-md-4 pd-3" key={i}>
-                <div className="blog-content-1" onClick={() => { login() }}  >
-                  <img src="images/img-4.png" className="img-fluid" alt="img" />
-                  <span>Bookscribs Blog</span>
-                  <h2>{user.title}</h2>
-                  <div className="icon-1">
-                    <p><i className="fa fa-calendar" aria-hidden="true"></i>27 October</p>
-                    <p><i className="fa fa-eye" aria-hidden="true"></i>8 Min Read</p>
-                  </div>
-                  <p>{user.desc} <Link to="#">Veiw More</Link></p>
-                </div>
-              </div>
-
-
-            ))
-            :
-            <>No Record Found</>
-            }
-
+            {displayBlog}
           </div>
           <div className="row pd-3">
             <div className="col-md-12">
-              <ul id="breadcrumbs">
-                <li><Link to="#" onClick={() => setPage(page + 1 - 2)}
-                  isLoading={respon.isFetching}>1</Link></li>
-                <li><Link to="#" onClick={() => setPage(page + 1)}
-                  isLoading={respon.isFetching}>2</Link></li>
-                <li><Link to="#" onClick={() => setPage(page + 3 - 2)}
-                  isLoading={respon.isFetching}>3</Link></li>
-                <li><Link to="#" onClick={() => setPage(page + 2)}
-                  isLoading={respon.isFetching}>..</Link></li>
-                <i className="fa fa-angle-right icon-2" aria-hidden="true"></i>
-
-              </ul>
+              <ReactPaginate
+                previousLabel={"previous"}
+                nextLabel={"next"}
+                pageCount={pageCount}
+                onPageChange={changePage}
+                containerClassName={"paginationBttns"}
+                previousLinkClassName={"previousBttns"}
+                nextLinkClassName={"nextBttn"}
+                disabledClassName={"paginationDisabled"}
+                activeClassName={"paginatiionActive"}
+              />
             </div>
           </div>
         </div>
@@ -76,5 +86,4 @@ const Home = () => {
     </>
   )
 }
-
 export default Home
