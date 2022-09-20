@@ -56,45 +56,52 @@ const Dashboard = () => {
                             <div className="card-header">
                                 <i className="fas fa-table me-1"></i>
                                 Post Data
+                                <Link className="btn btn-primary float-right" to={"/dashboard/"}>Add Post</Link>
                             </div>
                             <div className="card-body">
                                 <table id="datatablesSimple" className="dataTable-table">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Created</th>
+                                            <th>Options</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Created</th>
+                                            <th>Options</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <tr>
-                                            <td>Tiger Nixon</td>
-                                            <td>System Architect</td>
-                                            <td>Edinburgh</td>
-                                            <td>61</td>
-                                            <td>2011/04/25</td>
-                                            <td>$320,800</td>
+                                            <td>1</td>
+                                            <td>Top Bookscribs 2921 Adaptation Recommendations</td>
+                                            <td>test</td>
+                                            <td>BookScribe</td>
+                                            <td>2022-09-06 18:05:24</td>
+                                            <td>
+                                              <Link className="btn btn-primary" to="#"><i className="fas fa-edit"></i></Link>
+                                              <Link className="btn btn-primary ml-1" to="#"><i className="fas fa-trash"></i></Link>
+                                            </td>
                                         </tr>
                                         <tr>
-                                            <td>Garrett Winters</td>
-                                            <td>Accountant</td>
-                                            <td>Tokyo</td>
-                                            <td>63</td>
-                                            <td>2011/07/25</td>
-                                            <td>$170,750</td>
+                                            <td>2</td>
+                                            <td>Top Bookscribs 2921 Adaptation Recommendations</td>
+                                            <td>test</td>
+                                            <td>BookScribe</td>
+                                            <td>2022-09-06 18:05:24</td>
+                                            <td>
+                                              <Link className="btn btn-primary" to="#"><i className="fas fa-edit"></i></Link>
+                                              <Link className="btn btn-primary ml-1" to="#"><i className="fas fa-trash"></i></Link>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -106,11 +113,6 @@ const Dashboard = () => {
                     <div className="container-fluid px-4">
                         <div className="d-flex align-items-center justify-content-between small">
                             <div className="text-muted">Copyright &copy; Your Website 2022</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
                         </div>
                     </div>
                 </footer>
