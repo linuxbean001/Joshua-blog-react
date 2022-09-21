@@ -33,3 +33,14 @@ export const blogCategoryReducer= (state = {}, { type, payload }) => {
             return state;
     }
 };
+
+
+export const addPostReducer= (state = {}, { type, payload }) => {
+    switch (type) {
+
+        case ActionTypes.ADD_POST:
+            return { ...state, ... payload };
+        default:
+            return state;
+    }
+};

@@ -18,3 +18,9 @@ export const reletedPost =(reletedCategory)=>{
          payload: reletedCategory,
     };
 };
+export const addPost =(addPost)=>{
+    return{
+        type:ActionTypes.ADD_POST,
+         payload: addPost,
+    };
+};

@@ -1,10 +1,11 @@
 import { combineReducers } from "redux";
-import { blogReducer,blogDetailReducer,blogCategoryReducer } from "./blogReducer";
+import { blogReducer,blogDetailReducer,blogCategoryReducer,addPostReducer } from "./blogReducer";
 
 const reducersApi =combineReducers({
     allBlog: blogReducer,
     blogDetail:blogDetailReducer,
-    blogCategory :blogCategoryReducer 
+    blogCategory :blogCategoryReducer,
+    addPost :addPostReducer
 });
 
 export default reducersApi;
