@@ -24,3 +24,9 @@ export const addPost =(addPost)=>{
          payload: addPost,
     };
 };
+export const addBlog =(addBlog)=>{
+    return{
+        type:ActionTypes.ADD_BLOG,
+         payload: addBlog,
+    };
+};

@@ -1,13 +1,63 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState ,useRef} from 'react';
 import { Link } from "react-router-dom";
-//import { useGetBlogByCategoryQuery } from './services/post';
-// import { useParams } from "react-router-dom";
-// import axios from 'axios';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { reletedPost } from './redux/actions/action';
-
+import { useForm } from "react-hook-form";
+import axios from 'axios';
+import moment from 'moment'
+import { useDispatch, useSelector } from 'react-redux';
+import { setBlog } from '../redux/actions/action'
 
 const Dashboard = () => {
+    const hiddenFileInput = React.useRef();
+    const blog = useSelector((state) => state.allBlog.blog);
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const updtePost = async (data) => {
+        // const body = {
+        //     "title": data.title,
+        //     "desc": data.desc,
+        //     "by_Category": data.by_Category,
+        //     "by_Author": data.by_Author,
+        //     "img_url": data.img_url[0].name
+        // }
+        // console.log(body);
+        const formData = new FormData();
+        formData.append('img_url', hiddenFileInput.current.files[0]);
+        formData.append("desc", data.desc);
+        formData.append("title", data.title);
+        formData.append("by_Category", data.by_Category);
+        formData.append("by_Author", data.by_Author);
+        // formData.append("img_url", data.img_url);
+         console.log("formdata",formData)
+        const requestOptions = {
+            method: 'POST',
+            headers: { "Content-type": "multipart/form-data"},
+            body: formData,
+            mode: 'no-cors',
+            
+               };
+        fetch('http://127.0.0.1:8000/api/addpost', requestOptions)
+            .then(response => response.json()).catch(error => {
+             console.log(error);
+         });
+                
+                ;
+    }
+    
+    const dispatch = useDispatch();
+    const fetchBlog = async () => {
+      const respone = await axios.get("http://127.0.0.1:8000/api/data").catch((err) => {
+        console.log("err", err)
+      });
+      dispatch(setBlog(respone.data))
+    };
+    useEffect(() => {
+      fetchBlog();
+    }, []);
+  
+    if (blog.isLoading) return <><h4>Loading...</h4></>
+    if (blog.isError) return <><h2>An error occured {blog.error.error}</h2></>
+    const handleClick = event => {
+        hiddenFileInput.current.click();
+      };
     return (
         <>
             <nav className="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -66,33 +116,58 @@ const Dashboard = () => {
                                                 <h5 class="modal-title" id="exampleModalLabel">Add Post</h5>
                                             </div>
                                             <div class="modal-body">
-                                                <form>
+                                                <form onSubmit={handleSubmit(updtePost)}>
                                                     <div className="form-floating mb-3">
-                                                        <input className="form-control" type="text" placeholder="Title" />
+                                                        <input className="form-control" type="text" placeholder="title"   {...register("title", { required: "Please enter your title." })} />
+                                                        {errors.title ? (
+                                                            <>
+                                                                {errors.title.type === "required" && (
+                                                                    <p className="errorMessage">
+                                                                        {errors.title.message}
+                                                                    </p>
+                                                                )}
+                                                            </>
+                                                        ) : null}
                                                         <label htmlFor="inputEmail">Title</label>
                                                     </div>
                                                     <div className="form-floating mb-3">
-                                                        <input className="form-control" type="text" placeholder="Description" />
+                                                        <input className="form-control" type="text" name="desc" placeholder="Description"   {...register("desc", { required: "Please enter your description ." })} />
                                                         <label htmlFor="inputPassword">Description</label>
+                                                        {errors.desc ? (
+                                                            <>
+                                                                {errors.title.type === "required" && (
+                                                                    <p className="errorMessage">
+                                                                        {errors.desc.message}
+                                                                    </p>
+                                                                )}
+                                                            </>
+                                                        ) : null}
                                                     </div>
                                                     <div className="form-floating mb-3">
                                                         <label for="formFile" class="form-label"></label>
-                                                        <input class="form-control" name="img_url" type="file" id="formFile" />
+                                                        {/* <input class="form-control" name="img_url"   {...register("img_url", { required: "Please enter your img_url." })} type="file"  id="formFile" /> */}
+                                                        <div className='profileboxfooter'>
+                  <Link to='#' onClick={handleClick}>Upload Picture</Link>
+                  <input
+                    type="file"
+                    name="img_url" 
+                    ref={hiddenFileInput}
+                    // onChange={handleChange}
+                    style={{ display: 'none' }}
+                  />
+                </div>
                                                     </div>
                                                     <div className="form-floating mb-3">
-                                                        <input className="form-control" type="text" placeholder="Authore" />
+                                                        <input className="form-control" type="text" placeholder="Authore" name="by_Author"  {...register("by_Author", { required: "Please enter authore name." })} />
                                                         <label htmlFor="inputPassword">Authore</label>
                                                     </div>
                                                     <div className="form-floating mb-3">
-                                                        <input className="form-control" type="text" placeholder="Category" />
+                                                        <input className="form-control" type="text" placeholder="Category" name="by_Category"  {...register("by_Category", { required: "Please enter category name." })} />
                                                         <label htmlFor="inputPassword">Category</label>
                                                     </div>
-                                                    <div className="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                        <button className="btn btn-primary" type="submit">Save</button>
-                                                    </div>
+                                                    <input type="submit" className="btn btn-primary" />
                                                 </form>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -119,28 +194,19 @@ const Dashboard = () => {
                                             </tr>
                                         </tfoot>
                                         <tbody>
+                                        {blog.map((item)=>{return(
                                             <tr>
-                                                <td>1</td>
-                                                <td>Top Bookscribs 2921 Adaptation Recommendations</td>
-                                                <td>test</td>
-                                                <td>BookScribe</td>
-                                                <td>2022-09-06 18:05:24</td>
+                                                <td>{item.id}</td>
+                                                <td>{item.title}</td>
+                                                <td>{item.desc}</td>
+                                                <td>{item.by_Category}</td>
+                                                <td>{ (item.created_at) ? moment(item.created_at).format("DD MMMM") : ""}</td>
                                                 <td>
                                                     <Link className="btn btn-primary" to="#"><i className="fas fa-edit"></i></Link>
                                                     <Link className="btn btn-primary ml-1" to="#"><i className="fas fa-trash"></i></Link>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>Top Bookscribs 2921 Adaptation Recommendations</td>
-                                                <td>test</td>
-                                                <td>BookScribe</td>
-                                                <td>2022-09-06 18:05:24</td>
-                                                <td>
-                                                    <Link className="btn btn-primary" to="#"><i className="fas fa-edit"></i></Link>
-                                                    <Link className="btn btn-primary ml-1" to="#"><i className="fas fa-trash"></i></Link>
-                                                </td>
-                                            </tr>
+                                        )})}
                                         </tbody>
                                     </table>
                                 </div>

@@ -44,3 +44,12 @@ export const addPostReducer= (state = {}, { type, payload }) => {
             return state;
     }
 };
+export const addBlogReducer= (state = {}, { type, payload }) => {
+    switch (type) {
+
+        case ActionTypes.ADD_BLOG:
+            return { ...state, ... payload };
+        default:
+            return state;
+    }
+};
