@@ -1,63 +1,78 @@
-import React, { useEffect, useState ,useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux';
 import { setBlog } from '../redux/actions/action'
+import ReactPaginate from "react-paginate"
 
 const Dashboard = () => {
     const hiddenFileInput = React.useRef();
     const blog = useSelector((state) => state.allBlog.blog);
+    const [pageNumber, setPageNumber] = useState(0)
+    const blogPerPage = 3
+    const pagesVisited = pageNumber * blogPerPage
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const updtePost = async (data) => {
-        // const body = {
-        //     "title": data.title,
-        //     "desc": data.desc,
-        //     "by_Category": data.by_Category,
-        //     "by_Author": data.by_Author,
-        //     "img_url": data.img_url[0].name
-        // }
-        // console.log(body);
-        const formData = new FormData();
-        formData.append('img_url', hiddenFileInput.current.files[0]);
-        formData.append("desc", data.desc);
-        formData.append("title", data.title);
-        formData.append("by_Category", data.by_Category);
-        formData.append("by_Author", data.by_Author);
-        // formData.append("img_url", data.img_url);
-         console.log("formdata",formData)
-        const requestOptions = {
-            method: 'POST',
-            headers: { "Content-type": "multipart/form-data"},
-            body: formData,
-            mode: 'no-cors',
-            
-               };
-        fetch('http://127.0.0.1:8000/api/addpost', requestOptions)
-            .then(response => response.json()).catch(error => {
-             console.log(error);
-         });
-                
-                ;
-    }
-    
-    const dispatch = useDispatch();
-    const fetchBlog = async () => {
-      const respone = await axios.get("http://127.0.0.1:8000/api/data").catch((err) => {
-        console.log("err", err)
-      });
-      dispatch(setBlog(respone.data))
-    };
-    useEffect(() => {
-      fetchBlog();
-    }, []);
-  
-    if (blog.isLoading) return <><h4>Loading...</h4></>
-    if (blog.isError) return <><h2>An error occured {blog.error.error}</h2></>
     const handleClick = event => {
         hiddenFileInput.current.click();
-      };
+    };
+    const displayBlog = blog.slice(pagesVisited, pagesVisited + blogPerPage).map((item) => {
+        return (
+            <tbody>
+                <tr>
+                    <td>{item.id}</td>
+                    <td>{item.title}</td>
+                    <td>{item.desc}</td>
+                    <td>{item.by_Category}</td>
+                    <td>{(item.created_at) ? moment(item.created_at).format("DD MMMM") : ""}</td>
+                    <td>
+                        <Link className="btn btn-primary" to="#"><i className="fas fa-edit"></i></Link>
+                        <Link className="btn btn-primary ml-1" to="#"><i className="fas fa-trash"></i></Link>
+                    </td>
+                </tr>
+            </tbody>
+        )
+    })
+    const pageCount = Math.ceil(blog.length / blogPerPage);
+    const changePage = ({ selected }) => {
+        setPageNumber(selected)
+    }
+    const updtePost = async (data) => {
+        const formData = new FormData();
+        formData.append("desc", data.desc);
+        formData.append("title", data.title);
+        formData.append('img_url', hiddenFileInput.current.files[0]);
+        formData.append("by_Category", data.by_Category);
+        formData.append("by_Author", data.by_Author);
+        fetch('http://127.0.0.1:8000/api/addpost', {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: formData
+        }).then((resp) => {
+            resp.json().then((result) => {
+
+                console.log("Data Success", result);
+            })
+        })
+    }
+
+    const dispatch = useDispatch();
+    const fetchBlog = async () => {
+        const respone = await axios.get("http://127.0.0.1:8000/api/data").catch((err) => {
+            console.log("err", err)
+        });
+        dispatch(setBlog(respone.data))
+    };
+    useEffect(() => {
+        fetchBlog();
+    }, []);
+
+    if (blog.isLoading) return <><h4>Loading...</h4></>
+    if (blog.isError) return <><h2>An error occured {blog.error.error}</h2></>
+
     return (
         <>
             <nav className="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -116,6 +131,7 @@ const Dashboard = () => {
                                                 <h5 class="modal-title" id="exampleModalLabel">Add Post</h5>
                                             </div>
                                             <div class="modal-body">
+
                                                 <form onSubmit={handleSubmit(updtePost)}>
                                                     <div className="form-floating mb-3">
                                                         <input className="form-control" type="text" placeholder="title"   {...register("title", { required: "Please enter your title." })} />
@@ -145,17 +161,16 @@ const Dashboard = () => {
                                                     </div>
                                                     <div className="form-floating mb-3">
                                                         <label for="formFile" class="form-label"></label>
-                                                        {/* <input class="form-control" name="img_url"   {...register("img_url", { required: "Please enter your img_url." })} type="file"  id="formFile" /> */}
-                                                        <div className='profileboxfooter'>
-                  <Link to='#' onClick={handleClick}>Upload Picture</Link>
-                  <input
-                    type="file"
-                    name="img_url" 
-                    ref={hiddenFileInput}
-                    // onChange={handleChange}
-                    style={{ display: 'none' }}
-                  />
-                </div>
+                                                        {/* <input class="form-control" name="img_url"   {...register("img_url",{ required: "Please enter your img_url." })} type="file"  id="formFile" /> */}
+
+                                                        <Link to='#' onClick={handleClick}>Upload Picture</Link>
+                                                        <input
+                                                            type="file"
+                                                            ref={hiddenFileInput}
+                                                            name="img_url"
+                                                            style={{ display: 'none' }}
+                                                        />
+
                                                     </div>
                                                     <div className="form-floating mb-3">
                                                         <input className="form-control" type="text" placeholder="Authore" name="by_Author"  {...register("by_Author", { required: "Please enter authore name." })} />
@@ -185,15 +200,21 @@ const Dashboard = () => {
                                         </thead>
                                         <tfoot>
                                             <tr>
-                                                <th>ID</th>
-                                                <th>Title</th>
-                                                <th>Description</th>
-                                                <th>Category</th>
-                                                <th>Created</th>
-                                                <th>Options</th>
+                                                <ReactPaginate
+                                                    previousLabel={"previous"}
+                                                    nextLabel={"next"}
+                                                    pageCount={pageCount}
+                                                    onPageChange={changePage}
+                                                    containerClassName={"paginationBttns"}
+                                                    previousLinkClassName={"previousBttns"}
+                                                    nextLinkClassName={"nextBttn"}
+                                                    disabledClassName={"paginationDisabled"}
+                                                    activeClassName={"paginatiionActive"}
+                                                />
                                             </tr>
                                         </tfoot>
-                                        <tbody>
+                                        {displayBlog}
+                                        {/* <tbody>
                                         {blog.map((item)=>{return(
                                             <tr>
                                                 <td>{item.id}</td>
@@ -207,7 +228,7 @@ const Dashboard = () => {
                                                 </td>
                                             </tr>
                                         )})}
-                                        </tbody>
+                                        </tbody> */}
                                     </table>
                                 </div>
                             </div>

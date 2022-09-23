@@ -16,7 +16,9 @@ const Home = () => {
     return (
       <div className="col-md-4 pd-3" >
         <div className="blog-content-1"   >
-          <img height={400} width={300} src={user.img_url} />
+          {console.log("User detail "+JSON.stringify(user.img_url))}
+          <img height={400} width={300} src={`http://127.0.0.1:8000`+user.img_url}  alt="post" />
+          {/* <img src={user.img_url}  alt="post"/> */}
           <span>{user.by_Category}</span>
           <h2>{user.title}</h2>
           <div className="icon-1">
