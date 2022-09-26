@@ -4,10 +4,8 @@ import Home from './Home'
 import BlogDetail from './BlogDetails';
 import Login from './admin/Login';
 import Dashboard from './admin/Dashboard';
-
 const App = () => {
-  let parmas =useParams();
-  
+  let {id} =useParams();
   return (
     <>
     <BrowserRouter>

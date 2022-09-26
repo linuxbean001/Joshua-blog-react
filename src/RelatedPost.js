@@ -9,10 +9,7 @@ const RelatedPost = () => {
   let params = useParams();
   const relatedPost = useSelector((state) => state.blogCategory)
   const { category } = useParams();
-  console.log("useparams value  "+useParams);
- // console.log(relatedPost)
   const dispatch = useDispatch();
-  console.log("category value"+category);
   const fetchBlogCategory = async () => {
     const response = await axios.get(`http://127.0.0.1:8000/api/relatedBlog/${category}`).catch(err => {
       console.log(err);

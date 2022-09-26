@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import background from './images/bg-hit.png';
+import { BrowserRouter , Routes , Route ,useParams } from 'react-router-dom'
 import moment from 'moment'
 import axios from "axios";
 import { useDispatch, useSelector } from 'react-redux';

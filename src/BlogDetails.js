@@ -10,6 +10,7 @@ import { fetchDetail } from './redux/actions/action';
 const BlogDetails = () => {
   const blogDetail = useSelector((state) => state.blogDetail)
   const { id } = useParams();
+  console.log(id);
   const dispatch = useDispatch();
 
   const fetchBlogDetail = async () => {
