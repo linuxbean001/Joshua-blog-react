@@ -9,6 +9,7 @@ import { fetchDetail } from './redux/actions/action';
 
 const BlogDetails = () => {
   const blogDetail = useSelector((state) => state.blogDetail)
+  console.log(blogDetail);
   const { id } = useParams();
   console.log(id);
   const dispatch = useDispatch();
@@ -51,7 +52,7 @@ const BlogDetails = () => {
               <div className="blog-content-2">
                 <h2>{blogDetail.title}</h2>
                 <span>by {blogDetail.by_Author}</span>
-                <img height={400} width={600} src={blogDetail.img_url} />
+                <img height={400} width={600} src={`http://127.0.0.1:8000`+blogDetail.img_url} />
                 <p>{blogDetail.desc}</p>
                 <h3>Tags:</h3>
                 <div className="tages">
