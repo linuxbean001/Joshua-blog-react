@@ -17,7 +17,8 @@ code {
   height: 40px;
   list-style: none;
   display: flex;
-  justify-content: center;
+margin-left: 110px;
+margin-top: 40px;
 }
 
 .paginationBttns a {

@@ -20,7 +20,7 @@ const Home = () => {
           {console.log("User detail "+JSON.stringify(user.img_url))}
           <img height={400} width={300} src={`http://127.0.0.1:8000`+user.img_url}  alt="post" />
           {/* <img src={user.img_url}  alt="post"/> */}
-          <span>{user.by_Category}</span>
+          {/* <span>{user.by_Category}</span> */}
           <h2>{user.title}</h2>
           <div className="icon-1">
             <p><i className="fa fa-calendar" aria-hidden="true"></i>{ (user.created_at) ? moment(user.created_at).format("DD MMMM") : ""}</p>

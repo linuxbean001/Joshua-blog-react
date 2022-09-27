@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link,useRoutes  } from "react-router-dom";
+import { Link, useRoutes } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import moment from 'moment'
@@ -16,13 +16,14 @@ const Dashboard = () => {
     const [pageNumber, setPageNumber] = useState(0)
     const blogPerPage = 3
     const pagesVisited = pageNumber * blogPerPage
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const {
         register: register2,
         formState: { errors: errors2 },
         handleSubmit: handleSubmit2,
         getValues: getValues2,
-        setValue: setValue2
+        setValue: setValue2,
+        reset: reset2
     } = useForm();
     const handleClick = event => {
         hiddenFileInput.current.click();
@@ -41,7 +42,7 @@ const Dashboard = () => {
                     <td>{(item.created_at) ? moment(item.created_at).format("DD MMMM") : ""}</td>
                     <td>
                         <button onClick={() => handleShow(item)} className="btn btn-primary"><i className="fas fa-edit" ></i></button>
-                        <button onClick={(e) => deletePost(e, item.id)  } className="btn btn-primary ml-1" to="#"><i className="fas fa-trash"></i></button>
+                        <button onClick={(e) => deletePost(e, item.id)} className="btn btn-primary ml-1" to="#"><i className="fas fa-trash"></i></button>
                     </td>
                 </tr>
             </tbody>
@@ -53,8 +54,8 @@ const Dashboard = () => {
     }
 
     const deletePost = async (e, id) => {
-        console.log(id);
         e.preventDefault();
+
         const thisClicked = e.currentPost;
         const postsss = await fetch(`http://127.0.0.1:8000/api/deletePost/${id}`, {
             method: "POST",
@@ -64,23 +65,22 @@ const Dashboard = () => {
 
         }).then((resp) => {
             resp.json().then((result) => {
-                 toast.error("Succesfully Deleted!", {position: toast.POSITION.TOP_CENTER});
-                console.log("Data Success", result);
-                dispatch(addBlog(result.data))
+                toast.error("Succesfully Deleted!", { autoClose: 3000 }, { position: toast.POSITION.TOP_CENTER });
+                // dispatch(addBlog(result.data))
+                window.location.reload(false)
             })
         })
 
 
     }
     const addPost = async (data) => {
-        console.log(data);
+        reset();
         const formData = new FormData();
         formData.append("desc", data.desc);
         formData.append("title", data.title);
         formData.append('img_url', hiddenFileInput.current.files[0]);
         formData.append("by_Category", data.by_Category);
         formData.append("by_Author", data.by_Author);
-        console.log("dataaa",formData);
         const postsss = await fetch('http://127.0.0.1:8000/api/addpost', {
             method: "POST",
             headers: {
@@ -89,9 +89,10 @@ const Dashboard = () => {
             body: formData
         }).then((resp) => {
             resp.json().then((result) => {
-                toast.success(" Post Succesfully!", {position: toast.POSITION.TOP_CENTER});
+                toast.success(" Post Succesfully!", { autoClose: 3000 }, { position: toast.POSITION.TOP_CENTER });
                 console.log("Data Success", result);
                 dispatch(addBlog(result.data))
+                window.location.reload(false)
             })
         })
 
@@ -100,13 +101,13 @@ const Dashboard = () => {
     const handleClose = () => setShow(false);
     function handleShow(name) {
         console.log(name);
-        const fields = ['id', 'title', 'desc', 'by_Category', 'by_Author'];
+        const fields = ['id', 'title', 'desc', 'img_url','by_Category', 'by_Author'];
         fields.forEach(field => setValue2(field, name[field]));
         setShow(true);
     }
 
     const editPost = async (data) => {
-        console.log(data.id);
+        reset2();
         const formData = new FormData();
         formData.append("id", data.id);
         formData.append("title", data.title);
@@ -123,11 +124,11 @@ const Dashboard = () => {
             body: formData
         }).then((resp) => {
             resp.json().then((result) => {
-                toast.success(" Post Edit Succesfully!", {position: toast.POSITION.TOP_CENTER});
+                toast.success(" Post Edit Succesfully!", { autoClose: 3000 }, { position: toast.POSITION.TOP_CENTER });
                 console.log("Data Success", result);
                 setShow(false)
-                console.log("Data Success", result);
                 //dispatch(addBlog(result.data))
+                window.location.reload(false)
             })
         })
 
@@ -179,7 +180,7 @@ const Dashboard = () => {
                                     Posts
                                 </Link>
                             </div>
-                        </div> 
+                        </div>
                         <div className="sb-sidenav-footer">
                             <div className="small">Logged in as:</div>
                             Blog Post
@@ -237,13 +238,13 @@ const Dashboard = () => {
                                                         <label for="formFile" class="form-label"></label>
                                                         {/* <input class="form-control" name="img_url"   {...register("img_url",{ required: "Please enter your img_url." })} type="file"  id="formFile" /> */}
 
-                                                        <Link to='#' onClick={handleClick1} > Upload Picture</Link>
+                                                        <Link to='#' onClick={handleClick} > Upload Picture</Link>
                                                         <input
                                                             type="file"
                                                             ref={hiddenFileInput}
                                                             name="img_url"
                                                             style={{ display: 'none' }}
-                                                            {...register("img_url", { required: "Please upload image." })}
+                                                        //    / {...register("img_url", { required: "Please upload image." })}
                                                         />
                                                         {errors.img_url ? (
                                                             <>
@@ -317,7 +318,7 @@ const Dashboard = () => {
                                         />
 
                                     </tfoot>
-                                    <ToastContainer/>
+                                    <ToastContainer />
                                     <div class={(show) ? 'modal fade show' : ''} style={{ display: show ? 'block' : 'none' }} id="exampleEditModal" tabindex="-1" aria-labelledby="exampleEditModal" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -358,13 +359,23 @@ const Dashboard = () => {
                                                         <div className="form-floating mb-3">
                                                             <label for="formFile" class="form-label"></label>
 
-                                                            <Link to='#' onClick={handleClick}>Upload Picture</Link>
+                                                            <Link to='#' onClick={handleClick1}>Upload Picture</Link>
                                                             <input
                                                                 type="file"
                                                                 ref={hiddenFileInput}
                                                                 name="img_url"
                                                                 style={{ display: 'none' }}
+                                                            //{...register("img_url", { required: "Please upload image." })}
                                                             />
+                                                            {errors2.img_url ? (
+                                                                <>
+                                                                    {errors2.title.type === "required" && (
+                                                                        <p className="errorMessage">
+                                                                            {errors2.img_url.message}
+                                                                        </p>
+                                                                    )}
+                                                                </>
+                                                            ) : null}
 
                                                         </div>
                                                         <div className="form-floating mb-3">
