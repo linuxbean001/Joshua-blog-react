@@ -6,10 +6,11 @@ import background from './images/bg-hit.png';
 import { useDispatch, useSelector } from 'react-redux';
 import RelatedPost from './RelatedPost';
 import { fetchDetail } from './redux/actions/action';
+import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from 'react-toastify';
 
 const BlogDetails = () => {
   const blogDetail = useSelector((state) => state.blogDetail)
-  console.log(blogDetail);
   const { id } = useParams();
   console.log(id);
   const dispatch = useDispatch();
@@ -23,10 +24,35 @@ const BlogDetails = () => {
     if (id && id !== "") fetchBlogDetail();
   }, [id])
 
+  const { register, handleSubmit, reset,formState: { errors } } = useForm();
+  
+  const addComment = async (data, e) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("message", data.message);
+
+    const postsss = await fetch('http://127.0.0.1:8000/api/addComment', {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json'
+      },
+      body: formData
+    }).then((resp) => {
+      resp.json().then((result) => {
+        toast.success(" Post Succesfully!", { autoClose: 3000 }, { position: toast.POSITION.TOP_CENTER });
+        console.log("Data Success", result);
+        //dispatch(addBlog(result.data))
+        //window.location.reload(false)
+      })
+    })
+
+  }
 
   const myStyle = {
     backgroundImage: `linear-gradient( to bottom, #0b1216c9, #0b1216fc ), url("${background}")`
   };
+
 
   return (
     <>
@@ -52,7 +78,7 @@ const BlogDetails = () => {
               <div className="blog-content-2">
                 <h2>{blogDetail.title}</h2>
                 <span>by {blogDetail.by_Author}</span>
-                <img height={400} width={600} src={`http://127.0.0.1:8000`+blogDetail.img_url} />
+                <img height={400} width={600} src={`http://127.0.0.1:8000` + blogDetail.img_url} />
                 <p>{blogDetail.desc}</p>
                 <h3>Tags:</h3>
                 <div className="tages">
@@ -62,31 +88,61 @@ const BlogDetails = () => {
                   <Link to="#">Story Adaption</Link>
                 </div>
               </div>
-              <div className="blog-content-3">
-                <h3>Leave comment</h3>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <input type="text" className="form-control" id="usr" placeholder="Name" />
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <input type="email" className="form-control" id="pwd" placeholder="Email" />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <textarea className="form-control" rows="5" id="comment" placeholder="Message"></textarea>
-                </div>
-                <Link to="#" type="submit" className="btn btn-2">Submit</Link>
-              </div>
-            </div>
+              <form onSubmit={handleSubmit(addComment)}>
+                <div className="blog-content-3">
+                  <h3>Leave comment</h3>
+                  <div className="row">
+                    <div className="col-md-6">
 
+                      <div className="form-group">
+                        <input type="text" className="form-control" id="usr" placeholder="Name"   {...register("name", { required: "Please enter your name ." })} />
+                        {errors.name ? (
+                          <>
+                            {errors.name.type === "required" && (
+                              <p className="errorMessage">
+                                {errors.name.message}
+                              </p>
+                            )}
+                          </>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="form-group">
+                        <input type="email" className="form-control" id="pwd" placeholder="Email"    {...register("email", { required: "Please enter valid email." })} />
+                        {/* {errors.email ? (
+                          <>
+                            {errors.email.type === "required" && (
+                              <p className="errorMessage">
+                                {errors.eamil.message}
+                              </p>
+                            )}
+                          </>
+                        ) : null} */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <textarea className="form-control" rows="5" id="comment" placeholder="Message"   {...register("message", { required: "Please comments ." })}></textarea>
+                    {errors.message ? (
+                          <>
+                            {errors.message.type === "required" && (
+                              <p className="errorMessage">
+                                {errors.message.message}
+                              </p>
+                            )}
+                          </>
+                        ) : null}
+                  </div>
+                  <input type="submit" />
+                </div>
+              </form>
+            </div>
+          
             <div className="col-md-5">
               <div className="blog-content-4">
                 <div className="select-1">
-                  <img src={blogDetail.img_url} height={150} width={150} alt="img" className="img-fluid" />
+                  <img src={`http://127.0.0.1:8000` + blogDetail.img_url} height={150} width={150} alt="img" className="img-fluid" />
                   <h2>Bookscribs Blog</h2>
                 </div>
                 <p>Discover, analyze, and adapt stories on-demand.With Bookscribs, every author, agent, publisher, and media producer can redefine the storytelling experience.</p>
@@ -104,11 +160,11 @@ const BlogDetails = () => {
                   <Link to="#" className="btn-3">Get Started</Link>
                 </div>
                 <div className="img-5">
-                  <img src={blogDetail.img_url} height={140} width={160} alt="img" className="img-fluid" />
+                  <img src={`http://127.0.0.1:8000` + blogDetail.img_url} height={140} width={160} alt="img" className="img-fluid" />
                 </div>
               </div>
-              <RelatedPost />
-
+              {/* <RelatedPost /> */}
+              <ToastContainer />
               <div className="content-hit-1">
                 <h3>Share Post</h3>
                 <Link to="#"><i className="fa fa-twitter" aria-hidden="true"></i></Link>

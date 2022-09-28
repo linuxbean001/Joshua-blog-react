@@ -30,7 +30,7 @@ const RelatedPost = () => {
        
             <div className="content-select">
               <div className="img-1">
-              <img  height={100} width={200} src={user.img_url} className="img-fluid" />
+              <img  height={100} width={200} src={`http://127.0.0.1:8000`+ user.img_url} className="img-fluid" />
               </div>
               <div className="content-hit">
                 <h6>{user.by_Category}</h6>
